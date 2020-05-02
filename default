@@ -1,0 +1,29 @@
+server {
+	#listen 7777;
+	root /var/www/html/app1;
+	index index.php;
+	
+	location / {
+		try_files $uri $uri/ =404;
+	}
+	
+	location ~ /docs {
+		#rewrite /docs(.*) /$1 break;
+		root /var/www/html/app2;
+		rewrite /docs /index.php break;
+		include snippets/fastcgi-php.conf;
+		fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+	}
+	
+	location ~ \.php$ {
+		include snippets/fastcgi-php.conf;
+		fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+	}
+
+	location ~ /solve {
+		root /var/www/html/solve;
+                rewrite /solve(.*) /solve.php$1 break;
+                include snippets/fastcgi-php.conf;
+                fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+	}
+}
